@@ -1,7 +1,17 @@
 module.exports = function(tokens) {
     const keywords = [
         "mov",
-        "add"
+        "add",
+        "direct",
+        "or",
+        "and",
+        "xor",
+        "add",
+        "sub",
+        "not",
+        "nor",
+        "nand",
+        "nxor",
     ]
 
     const expressions = [];
@@ -44,6 +54,11 @@ module.exports = function(tokens) {
             if (keywords.includes(token.value)) {
                 return {
                     type: "statement",
+                    value: token.value,
+                }
+            } else {
+                return {
+                    type: "comment",
                     value: token.value,
                 }
             }
