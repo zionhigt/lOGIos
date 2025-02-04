@@ -5,8 +5,16 @@ module.exports = function (ast) {
     }
 
     const aluMethods = {
+        "direct": 0x00,
+        "or": 0x01,
+        "and": 0x02,
+        "xor": 0x03,
         "add": 0x04,
         "sub": 0x05,
+        "not": 0x08,
+        "nor": 0x09,
+        "nand": 0x0a,
+        "nxor": 0x0b,
     }
     const methods = {
         "mov": 0x00,
@@ -40,53 +48,49 @@ module.exports = function (ast) {
         
         let header = headers[kind];
         let cmd = methods[op];
-        let left  = expr.left;
-
-        if (op === "mov") {
-            cmd |= compile(left);
-            left = expr.right;
-            expr.right = null;
-        }
           
-        header |= cmd;
-
-        if (left.type === "address") {
+        if (expr.left.type === "address") {
             header |= 0x20  
         }
-        left = compile(left).toString(16);
-        
-        let right = 0x0
-        if (expr.right) {      
-            if (expr.right.type === "address") {
-            header |= 0x10  
-            }
-            right = compile(expr.right);
-        }
-        right = right.toString(16);
+        let left = compile(expr.left);
 
-        header = header.toString(16);
+        if (expr.right.type === "address") {
+            header |= 0x10  
+        }
+        right = compile(expr.right);
+
+        header |= cmd;
+
         let dest = 0x0
         if (expr.dest) {
             dest = compile(expr.dest);
         }
+
+        header = header.toString(16);
+        left = left.toString(16);
+        right = right.toString(16);
         dest = dest.toString(16);
+
         let binary = [
             header,
             left,
             right,
             dest
         ]
-        .map(item => item.toString(16))
         .map(item => item.padStart(2, "0"))
         .join("")
         return binary;
 
     }
 
-    let buffer = "";
-
-    for (let expr of ast) {
-        buffer += compile(expr);
-    }
-    return buffer;
+    return ast
+    .filter(item => item.type !== "comment")
+    .map(function(expr) {
+        const compiled = compile(expr);
+        if (typeof compiled !== "string" && !Number.isNaN(compiled)) {
+            return compiled.toString(16).padStart(8, "0")
+        }
+        return compiled;
+    })
+    .join(" ");
 }
