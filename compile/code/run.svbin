@@ -1,3 +1,6 @@
-mov r1 5
-mov r2 3
+mov 5 r1
+mov 3 r2
 add r1 r2 r3
+mov 2 r1
+sub r3 r1 r3
+toto
