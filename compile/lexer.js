@@ -78,7 +78,7 @@ module.exports =  function(code) {
     }
 
     function isAlpha(c) {
-        return c.toLowerCase() >= "a" && c.toLowerCase() <= "z";
+        return (c >= "a" && c <= "z") || (c >= "A" && c <= "Z");
     }
 
     return tokens;
