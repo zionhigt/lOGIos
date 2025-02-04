@@ -23,14 +23,14 @@ function write(p, name, data) {
     return fs.writeFileSync(path.join(p, name), headers + data);
 }
 
-const progDir = './code'
-const data = read(path.join(progDir, "run.svbin"));
+const data = read(path.join('./code', "/run.svbin"));
 
 const tokens = lexer(data);
 const ast = parser(tokens);
 
 const binary = compiler(ast);
 
+const progDir = "../VM_logicim"
 
 const codeName = "logi.prog";
 write(progDir, codeName, binary);
