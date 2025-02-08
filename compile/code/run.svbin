@@ -1,10 +1,10 @@
-mov 5 r1
-mov 3 r2
-add r1 r2 r3
-mov 2 r1
-sub r3 r1 r3
-eq 2 2
-jez 5
-eq 2 5
-jnez 3
-stop
+mov 3 r1
+:loop
+    sub r1 1 r1
+    jnez loop
+    jez endloop
+:end
+    stop
+:endloop
+    mov 1 r2
+    jez end
