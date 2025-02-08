@@ -786,7 +786,8 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="4" loc="(270,120)" name="ROM">
       <a name="dataWidth" val="32"/>
       <a name="contents">addr/data: 8 32
-50030000 25000100 c5010000 c3050000 88000000 50010100 c3040000
+50060000 50080100 50000200 25000100 34010202 c5030000 c3080000 88000000
+c3070000
 </a>
     </comp>
     <comp lib="0" loc="(1320,1220)" name="Splitter">
