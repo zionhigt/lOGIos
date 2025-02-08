@@ -1,7 +1,10 @@
 module.exports = function (ast) {
     const headers = {
-        "alu": 0x00, 
+        "alu": 0x00,
+        "compare": 0x80,
+        "jmp": 0xc0,
         "mov": 0x40,
+        "stop": 0x88,
     }
 
     const aluMethods = {
@@ -16,9 +19,30 @@ module.exports = function (ast) {
         "nand": 0x0a,
         "nxor": 0x0b,
     }
+    const compareMethods = {
+        "gt": 0x00,
+        "eq": 0x01,
+        "lt": 0x02,
+        "ngt": 0x04,
+        "neq": 0x05,
+        "nlt": 0x06,
+        
+    }
+    const jmpMethods = {
+        "jgz": 0x00,
+        "jez": 0x01,
+        "jlz": 0x02,
+        "jngz": 0x04,
+        "jnez": 0x05,
+        "jnlz": 0x06,
+        
+    }
     const methods = {
         "mov": 0x00,
-        ...aluMethods
+        "stop": 0x00,
+        ...aluMethods,
+        ...compareMethods,
+        ...jmpMethods,
     }
 
     function compile(expr) {
@@ -44,6 +68,12 @@ module.exports = function (ast) {
         let kind = op;
         if (aluMethods.hasOwnProperty(op)) {
             kind = "alu";
+        }
+        if (compareMethods.hasOwnProperty(op)) {
+            kind = "compare";
+        }
+        if (jmpMethods.hasOwnProperty(op)) {
+            kind = "jmp";
         }
         
         let header = headers[kind];
@@ -75,7 +105,7 @@ module.exports = function (ast) {
             header,
             left,
             right,
-            dest
+            dest,
         ]
         .map(item => item.padStart(2, "0"))
         .join("")
