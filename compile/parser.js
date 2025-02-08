@@ -1,4 +1,5 @@
-module.exports = function(tokens) {
+module.exports = function(analyze) {
+    const { meta, tokens } = analyze;
     const methodsWithHandledOutput = [
         "add",
         "or",
@@ -33,21 +34,39 @@ module.exports = function(tokens) {
         "neq",
         "nlt",
     ]
-
+    const labels = meta?.labels || [];
+    const _labels = {};
     const expressions = [];
     let cursor = 0;
     while (cursor < tokens.length) {
-        expressions.push(expression());
+        expressions.push(expression(expressions.length));
     }
-    return expressions;
+    return {
+        meta: { labels: _labels },
+        body: expressions,
+    };
 
-    function expression() {
-        return statementExpresssion();
+    function expression(n) {
+        return labelExpression(n);
     }
 
-    function statementExpresssion() {
-        let token = addressExpresssion();
-        if (token?.type === "statement") {
+    function labelExpression(n) {
+        let token = statementExpresssion(n);
+        if (token.type === "label") {
+            token = {
+                type: "label",
+                target: n - (Object.keys(_labels).length),
+                value: token.value,
+            };
+            _labels[token.value] = token;
+        }
+        return token;
+    }
+
+    function statementExpresssion(n) {
+        let token = addressExpresssion(n);
+        
+        if (keywords.includes(token.value)) {
             switch (token.value) {
                 case "stop":
                     token = {
@@ -63,7 +82,7 @@ module.exports = function(tokens) {
                         token = {
                             type: "binary",
                             operator: token.value,
-                            left: addressExpresssion(),
+                            left: addressExpresssion(n),
                             right: 0x00,
                             dest: 0x00,
                         }
@@ -72,12 +91,12 @@ module.exports = function(tokens) {
                     token = {
                         type: "binary",
                         operator: token.value,
-                        left: addressExpresssion(),
-                        right: addressExpresssion(),
+                        left: addressExpresssion(n),
+                        right: addressExpresssion(n),
                         dest: 0x00
                     }
                     if (methodsWithHandledOutput.includes(token.operator)) {
-                        token.dest = addressExpresssion();
+                        token.dest = addressExpresssion(n);
                     }
 
             }
@@ -85,8 +104,8 @@ module.exports = function(tokens) {
         return token;
     }
 
-    function addressExpresssion() {
-        let token = literalExpression();
+    function addressExpresssion(n) {
+        let token = literalExpression(n);
         if (token?.type === "address") {
             return {
                 type: "address",
@@ -96,19 +115,18 @@ module.exports = function(tokens) {
         return token;
     }
 
-    function literalExpression() {
+    function literalExpression(n) {
         let token = tokens[cursor ++];
         if (token?.type === "string") {
-            if (keywords.includes(token.value)) {
+            if (labels.includes(token?.value)) {
                 return {
-                    type: "statement",
+                    type: "address_label",
                     value: token.value,
                 }
-            } else {
-                return {
-                    type: "comment",
-                    value: token.value,
-                }
+            }
+            return {
+                type: "comment",
+                value: token.value,
             }
         }
         if (token?.type === "number") {

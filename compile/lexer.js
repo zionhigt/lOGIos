@@ -1,5 +1,6 @@
 module.exports =  function(code) {
     const tokens = [];
+    const labels = [];
     let cursor = 0;
     
 
@@ -14,6 +15,9 @@ module.exports =  function(code) {
                 break;
             case "r":
                 regName();
+                break;
+            case ":":
+                label();
                 break;
             default:
                 if (isAlpha(token)) {
@@ -61,12 +65,29 @@ module.exports =  function(code) {
 
         const addr = code.slice(start, cursor).toLowerCase();
         if (addr === "r") {
-            throw new Error("Anbigue R found ! Need you specifie a register address ?")
+            throw new Error("Ambiguous R found ! Need you specifie a register address ?")
         }
         tokens.push({
             type: "address",
             value: addr,
         })
+    }
+
+    function label() {
+        const start = cursor - 1;
+        while (isAlnum(code[cursor])) {
+            cursor ++;
+        }
+
+        const addr = code.slice(start + 1, cursor).toLowerCase();
+        if (addr === ":") {
+            throw new Error("Ambiguous label found ! Need you specifie a label name ?")
+        }
+        tokens.push({
+            type: "label",
+            value: addr,
+        })
+        labels.push(addr);
     }
 
     function isAlnum(c) {
@@ -81,5 +102,8 @@ module.exports =  function(code) {
         return (c >= "a" && c <= "z") || (c >= "A" && c <= "Z");
     }
 
-    return tokens;
+    return {
+        tokens,
+        meta: { labels },
+    };
 } 

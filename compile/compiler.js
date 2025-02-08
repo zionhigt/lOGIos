@@ -1,4 +1,6 @@
 module.exports = function (ast) {
+    const { meta, body } = ast;
+    const labels = meta?.labels || {};
     const headers = {
         "alu": 0x00,
         "compare": 0x80,
@@ -45,9 +47,12 @@ module.exports = function (ast) {
         ...jmpMethods,
     }
 
+
     function compile(expr) {
         switch (expr.type) {
-            case ("literal"):
+            case "address_label":
+                return parseAddressLabel(expr);
+            case "literal":
                 return expr.value;
             case "address":
                 return parseRegAddress(expr.value);
@@ -57,6 +62,14 @@ module.exports = function (ast) {
                 return '';
         }
 
+    }
+
+    function parseAddressLabel (expr) {
+        if (labels.hasOwnProperty(expr.value)) {
+            return labels[expr.value].target;
+        } else {
+            throw new Error("Unreconized label '"+ expr.value +"'");
+        }
     }
 
     function parseRegAddress (value) {
@@ -113,7 +126,7 @@ module.exports = function (ast) {
 
     }
 
-    return ast
+    return ast.body
     .filter(item => item.type !== "comment")
     .map(function(expr) {
         const compiled = compile(expr);
