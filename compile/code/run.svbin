@@ -2,9 +2,9 @@ mov 3 r1
 :loop
     sub r1 1 r1
     jnez loop
-    jez endloop
+    jmp endloop
 :end
     stop
 :endloop
     mov 1 r2
-    jez end
+    jmp end
