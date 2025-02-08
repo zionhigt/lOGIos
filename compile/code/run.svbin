@@ -3,4 +3,8 @@ mov 3 r2
 add r1 r2 r3
 mov 2 r1
 sub r3 r1 r3
-toto
+eq 2 2
+jez 5
+eq 2 5
+jnez 3
+stop
