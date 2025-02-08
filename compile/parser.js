@@ -1,8 +1,6 @@
 module.exports = function(tokens) {
-    const keywords = [
-        "mov",
+    const methodsWithHandledOutput = [
         "add",
-        "direct",
         "or",
         "and",
         "xor",
@@ -13,6 +11,28 @@ module.exports = function(tokens) {
         "nand",
         "nxor",
     ]
+    const jmpMethods = [
+        "jgz",
+        "jez",
+        "jlz",
+        "jngz",
+        "jnez",
+        "jnlz",
+    ]
+
+    const keywords = [
+        ...methodsWithHandledOutput,
+        ...jmpMethods,
+        "mov",
+        "direct",
+        "stop",
+        "gt",
+        "eq",
+        "lt",
+        "ngt",
+        "neq",
+        "nlt",
+    ]
 
     const expressions = [];
     let cursor = 0;
@@ -20,23 +40,51 @@ module.exports = function(tokens) {
         expressions.push(expression());
     }
     return expressions;
+
     function expression() {
-        return addExpresssion();
+        return statementExpresssion();
     }
 
-    function addExpresssion() {
+    function statementExpresssion() {
         let token = addressExpresssion();
-        while (token?.type === "statement") {
-            token = {
-                type: "binary",
-                operator: token.value,
-                left: addressExpresssion(),
-                right: addressExpresssion(),
-                dest: token.value === "mov" ? null : addressExpresssion(),
+        if (token?.type === "statement") {
+            switch (token.value) {
+                case "stop":
+                    token = {
+                        type: "binary",
+                        operator: "stop",
+                        left: 0x00,
+                        right: 0x00,
+                        dest: 0x00,
+                    }
+                    break;
+                default:
+                    if (jmpMethods.includes(token.value)) {
+                        token = {
+                            type: "binary",
+                            operator: token.value,
+                            left: addressExpresssion(),
+                            right: 0x00,
+                            dest: 0x00,
+                        }
+                        break;
+                    }
+                    token = {
+                        type: "binary",
+                        operator: token.value,
+                        left: addressExpresssion(),
+                        right: addressExpresssion(),
+                        dest: 0x00
+                    }
+                    if (methodsWithHandledOutput.includes(token.operator)) {
+                        token.dest = addressExpresssion();
+                    }
+
             }
         }
         return token;
     }
+
     function addressExpresssion() {
         let token = literalExpression();
         if (token?.type === "address") {
