@@ -126,7 +126,7 @@ module.exports = function (ast) {
 
     }
 
-    return ast.body
+    return body
     .filter(item => item.type !== "comment")
     .map(function(expr) {
         const compiled = compile(expr);
