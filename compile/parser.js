@@ -39,6 +39,7 @@ module.exports = function(analyze) {
     const _labels = {};
     const expressions = [];
     let cursor = 0;
+    let _countLineIgnore = 0;
     while (cursor < tokens.length) {
         expressions.push(expression(expressions.length));
     }
@@ -56,7 +57,7 @@ module.exports = function(analyze) {
         if (token.type === "label") {
             token = {
                 type: "label",
-                target: n - (Object.keys(_labels).length),
+                target: n - _countLineIgnore ++,
                 value: token.value,
             };
             _labels[token.value] = token;
@@ -119,12 +120,14 @@ module.exports = function(analyze) {
     function literalExpression(n) {
         let token = tokens[cursor ++];
         if (token?.type === "string") {
+            if (keywords.includes(token.value)) return token;
             if (labels.includes(token?.value)) {
                 return {
                     type: "address_label",
                     value: token.value,
                 }
             }
+            _countLineIgnore++;
             return {
                 type: "comment",
                 value: token.value,
