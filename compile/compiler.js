@@ -34,6 +34,7 @@ module.exports = function (ast) {
         "jgz": 0x00,
         "jez": 0x01,
         "jlz": 0x02,
+        "jmp": 0x03,
         "jngz": 0x04,
         "jnez": 0x05,
         "jnlz": 0x06,

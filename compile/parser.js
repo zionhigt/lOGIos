@@ -19,6 +19,7 @@ module.exports = function(analyze) {
         "jngz",
         "jnez",
         "jnlz",
+        "jmp",
     ]
 
     const keywords = [
