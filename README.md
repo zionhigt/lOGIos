@@ -10,7 +10,7 @@ LogiOs est un ordinateur virtuel conçu à partir d'un processeur 8 bits. Le pro
 
 ## Installation
 
-- http://www.cburch.com/logisim/
+- http://www.cburch.com/logisim/ (Java requis)
 
 ### Prérequis
 
@@ -22,7 +22,7 @@ LogiOs est un ordinateur virtuel conçu à partir d'un processeur 8 bits. Le pro
 1. Clone le repository :
 
    ```bash
-   git clone https://github.com/ton-utilisateur/LogiOs.git
+   git clone https://github.com/zionhigt/lOGIos.git
    cd LogiOs
 
 # Work in progress
