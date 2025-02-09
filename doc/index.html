@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation Technique - Jeu d'Instruction 8 Bits</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        h1, h2 { color: #2c3e50; }
+        h3 { color: #34495e; }
+        table { width: 100%; margin-bottom: 20px; border-collapse: collapse; }
+        th, td { padding: 10px; border: 1px solid #ddd; }
+        th { background-color: #f4f4f4; }
+
+        @media print {
+            .break-page {
+                page-break-before: always;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Documentation Technique pour le Jeu d'Instruction 8 Bits</h1>
+
+    <h2>Introduction</h2>
+    <p>Ce jeu d'instruction 8 bits est conçu pour la Machine virtuelle LogiOs simulée dans logisim</p>
+
+    <h2>Structure des Instructions</h2>
+    <h3>Modèle d'Instruction de 4 Octets</h3>
+    <table>
+        <tr>
+            <th>Bit (24-31)</th>
+            <th>Bit (16-23)</th>
+            <th>Bit (8-15)</th>
+            <th>Bit (0-7)</th>
+        </tr>
+        <tr>
+            <td>Pilotage</td>
+            <td>Registre A</td>
+            <td>Registre B</td>
+            <td>Output</td>
+        </tr>
+    </table>
+    <h3>1er octect poids fort Bit (24-31)</h3>
+    <table>
+        <tr>
+            <th>Bit (30-31)</th>
+            <th>Bit (28-29)</th>
+            <th>Bit (24-27)</th>
+        </tr>
+        <tr>
+            <td colspan="1">
+                <table>
+                    <tr>
+                        <th colspan="2">Fonction</th>
+                    </tr>
+                    <tr>
+                        <th colspan="1">ALU</th>
+                        <td colspan="1">00</td>
+                    </tr>
+                    <tr>
+                        <th colspan="1">MOV</th>
+                        <td colspan="1">01</td>
+                    </tr>
+                    <tr>
+                        <th colspan="1">COMPARE</th>
+                        <td colspan="1">10</td>
+                    </tr>
+                    <tr>
+                        <th colspan="1">JMP</th>
+                        <td colspan="1">11</td>
+                    </tr>
+                </table>
+            </td>
+            <td colspan="1">
+                <table>
+                    <tr>
+                        <td colspan="1">0: Valeur direct</td>
+                        <td colspan="1">1: Adresse de registre</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Pilote la valeur attendue dans les registres A et B</td>
+                    </tr>
+                </table>
+            </td>
+            <td colspan="1">Opcode</td>
+        </tr>
+        
+    </table>
+
+    <h3 class="break-page">Opcode Bit (24-27)</h3>
+    <table>
+        <tr>
+            <th>Méthode</th>
+            <th>Code</th>
+            <th colspan="2">commentaire</th>
+        </tr>
+        <tr>
+            <th colspan="4">ALU</th>
+        </tr>
+        <tr>
+            <th colspan="1">OR</th>
+            <td colspan="1">0000</td>
+            <td colspan="2" rowspan="8">Êcrit le resultat dans le registre<br/> à l'addresse lue dans Output Bit(0-7)</td>
+        </tr>
+        <tr>
+            <th colspan="1">AND</th>
+            <td colspan="1">0001</td>
+        </tr>
+        <tr>
+            <th colspan="1">XOR</th>
+            <td colspan="1">0010</td>
+        </tr>
+        <tr>
+            <th colspan="1">NOR</th>
+            <td colspan="1">1000</td>
+        </tr>
+        <tr>
+            <th colspan="1">NAND</th>
+            <td colspan="1">1001</td>
+        </tr>
+        <tr>
+            <th colspan="1">NXOR</th>
+            <td colspan="1">1010</td>
+        </tr>
+        <tr>
+            <th colspan="1">ADD</th>
+            <td colspan="1">0011</td>
+        </tr>
+        <tr>
+            <th colspan="1">SUB</th>
+            <td colspan="1">0100</td>
+        </tr>
+        <tr>
+            <th colspan="4">MOV</th>
+        </tr>
+        <tr>
+            <th colspan="1">MOV</th>
+            <td colspan="1">0000</td>
+            <td colspan="1">...</td>
+        </tr>
+        <tr>
+            <th colspan="4">COMPARE</th>
+        </tr>
+        <tr>
+            <th colspan="1">GT</th>
+            <td colspan="1">0000</td>
+            <td colspan="1">&gt;</td>
+            <td rowspan="6">Écrit le resultat dans le registre R1</td>
+        </tr>
+        <tr>
+            <th colspan="1">EQ</th>
+            <td colspan="1">0001</td>
+            <td colspan="1">=</td>
+        </tr>
+        <tr>
+            <th colspan="1">LT</th>
+            <td colspan="1">0010</td>
+            <td colspan="1">&lt;</td>
+        </tr>
+        <tr>
+            <th colspan="1">NGT</th>
+            <td colspan="1">0100</td>
+            <td colspan="1">&lt;=</td>
+        </tr>
+        <tr>
+            <th colspan="1">NEQ</th>
+            <td colspan="1">0101</td>
+            <td colspan="1">!=</td>
+        </tr>
+        <tr>
+            <th colspan="1">NLT</th>
+            <td colspan="1">0110</td>
+            <td colspan="1">&gt;=</td>
+        </tr>
+        <tr class="break-page">
+            <th colspan="4">JMP</th>
+        </tr>
+        <tr>
+            <th colspan="1">JGZ</th>
+            <td colspan="1">0000</td>
+            <td colspan="1">R1 &gt; 0</td>
+            <td rowspan="6">Saute à l'intruction <br>à l'adresse lue dans le Registre A</td>
+
+        </tr>
+        <tr>
+            <th colspan="1">JEZ</th>
+            <td colspan="1">0001</td>
+            <td colspan="1">R1 = 0</td>
+        </tr>
+        <tr>
+            <th colspan="1">JLZ</th>
+            <td colspan="1">0010</td>
+            <td colspan="1">R1 &lt; 0</td>
+        </tr>
+        <tr>
+            <th colspan="1">JNGZ</th>
+            <td colspan="1">0100</td>
+            <td colspan="1">R1 &lt;= 0</td>
+        </tr>
+        <tr>
+            <th colspan="1">JNEZ</th>
+            <td colspan="1">0101</td>
+            <td colspan="1">R1 != 0</td>
+        </tr>
+        <tr>
+            <th colspan="1">JNLZ</th>
+            <td colspan="1">0110</td>
+            <td colspan="1">R1 &gt;= 0</td>
+        </tr>
+    </table>
+
+    <h2>Détails Techniques</h2>
+    <h3>Registres</h3>
+    <table>
+        <tr>
+            <th>Nom</th>
+            <th>Adresse</th>
+        </tr>
+        <tr>
+            <td>R1</td>
+            <td>0x00</td>
+        </tr>
+        <tr>
+            <td>R2</td>
+            <td>0x01</td>
+        </tr>
+        <tr>
+            <td>R3</td>
+            <td>0x02</td>
+        </tr>
+        <tr>
+            <td>R4</td>
+            <td>0x03</td>
+        </tr>
+        <tr>
+            <td>R5</td>
+            <td>0x04</td>
+        </tr>
+        <tr>
+            <td>R6</td>
+            <td>0x05</td>
+        </tr>
+        <tr>
+            <td>R7</td>
+            <td>0x06</td>
+        </tr>
+    </table>
+
+    <h2 class="break-page">Exemples de Programmes</h2>
+    <p>Multiplier 6 x 8, et écrire le résultat dans R3</p>
+    <pre>
+    mov 6 r1
+    mov 8 r2
+    mov 0 r3
+    :loop
+        sub r1 1 r1
+        add r2 r3 r3
+        jnez loop
+        jmp endloop
+    :end
+        stop
+    :endloop
+        jmp end
+    </pre>
+
+    <table>
+        <tr>
+            <th>LABEL</th>
+        </tr>
+        <tr>
+            <td>:&lt;NOM&gt;</td>
+        </tr>
+    </table>
+</body>
+</html>
