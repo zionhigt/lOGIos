@@ -174,6 +174,25 @@ Syntaxe :
 jmp <adresse>        # saut inconditionnel
 ```
 
+> **Astuce : `jmp` — hack de compilation**
+>
+> L'instruction `jmp` (saut inconditionnel) n'existe pas nativement dans le processeur.
+> C'est un hack de compilation. Les conditions de saut utilisent 2 bits de l'opcode
+> pour selectionner le test sur R1 :
+>
+> ```
+> Bit 25  Bit 24    Condition
+>   0       0       GT  (R1 > 0)
+>   0       1       EQ  (R1 = 0)
+>   1       0       LT  (R1 < 0)
+>   1       1       ???  -> toujours vrai
+> ```
+>
+> L'opcode `0011` met les deux bits de condition a `1` simultanement.
+> Dans le circuit Logisim, cet etat non prevu est interprete comme une condition
+> toujours satisfaite, ce qui produit un saut inconditionnel.
+> Le compilateur genere l'octet de pilotage `0xC3` (fonction JMP `11` + opcode `0011`).
+
 #### STOP
 
 Arrete l'execution du processeur.
