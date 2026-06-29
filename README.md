@@ -159,14 +159,15 @@ Syntaxe :
 
 Saute a l'instruction a l'adresse lue dans le Registre A, si la condition sur R1 est remplie.
 
-| Methode  | Code   | Condition  |
-|----------|--------|------------|
-| **JGZ**  | `0000` | R1 > 0     |
-| **JEZ**  | `0001` | R1 = 0     |
-| **JLZ**  | `0010` | R1 < 0     |
-| **JNGZ** | `0100` | R1 <= 0    |
-| **JNEZ** | `0101` | R1 != 0    |
-| **JNLZ** | `0110` | R1 >= 0    |
+| Methode  | Code   | Condition      |
+|----------|--------|----------------|
+| **JGZ**  | `0000` | R1 > 0         |
+| **JEZ**  | `0001` | R1 = 0         |
+| **JLZ**  | `0010` | R1 < 0         |
+| **JMP**  | `0011` | toujours vrai  |
+| **JNGZ** | `0100` | R1 <= 0        |
+| **JNEZ** | `0101` | R1 != 0        |
+| **JNLZ** | `0110` | R1 >= 0        |
 
 Syntaxe :
 ```
@@ -174,29 +175,24 @@ Syntaxe :
 jmp <adresse>        # saut inconditionnel
 ```
 
-> **Astuce : `jmp` — hack de compilation**
+> **Note : `jmp` — saut inconditionnel (opcode `0011`)**
 >
-> L'instruction `jmp` (saut inconditionnel) n'existe pas nativement dans le jeu
-> d'instructions du processeur. C'est un hack de compilation qui exploite un
-> comportement du circuit Logisim.
->
-> Les conditions de saut utilisent les 2 bits bas de l'opcode pour selectionner
-> via un **Decoder 2 bits** la sortie du comparateur :
+> L'instruction `jmp` n'est pas documentee dans la spec d'origine, mais elle est
+> bien implementee dans le circuit. Les conditions de saut utilisent les 2 bits
+> bas de l'opcode pour selectionner via un **Decoder 2 bits** la sortie du
+> comparateur :
 >
 > ```
 > Bit 25  Bit 24    Decoder     Signal
 >   0       0       sortie 0    GT  (R1 > 0)
 >   0       1       sortie 1    EQ  (R1 = 0)
 >   1       0       sortie 2    LT  (R1 < 0)
->   1       1       sortie 3    (non route)
+>   1       1       sortie 3    constante 0x0 → toujours vrai apres inversion
 > ```
 >
-> Quand l'opcode vaut `0011`, les deux bits de condition sont a `1`.
-> Le decoder active sa 4eme sortie, mais celle-ci **n'est pas proprement routee**
-> vers un signal de condition. Cependant, comme on est deja dans la famille JMP
-> (fonction `11` sur bits 30-31), le processeur est en mode saut — l'absence de
-> condition valide ne bloque pas le saut, elle le laisse passer.
-> C'est un side-effect du design du circuit, pas une feature intentionnelle.
+> La 4eme sortie du decoder est cablée vers une constante `0x0`, qui apres
+> le NOT Gate du circuit produit une condition **toujours vraie** — soit un
+> saut inconditionnel.
 >
 > Le compilateur genere l'octet de pilotage `0xC3` (fonction JMP `11` + opcode `0011`).
 
